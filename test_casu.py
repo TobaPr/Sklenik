@@ -4,12 +4,10 @@ import adafruit_ds3231
 
 
 
-# Definice GPIO pinů pro I2C komunikaci
-sda_pin = board.GPIO27  # GPIO27 pro SDA
-scl_pin = board.GPIO22  # GPIO22 pro SCL
+
 
 # Inicializace I2C sběrnice s definovanými piny
-i2c = busio.I2C(scl=scl_pin, sda=sda_pin)
+i2c = busio.I2C(scl=15, sda=13)
 
 
 # Inicializace objektu RTC
