@@ -3,7 +3,7 @@ import busio
 import adafruit_ds3231
 
 # Inicializace I2C sběrnice
-i2c = busio.I2C(board.GPIO2, board.GPIO3)
+i2c = busio.I2C(2, 3)
 
 
 # Inicializace objektu RTC
