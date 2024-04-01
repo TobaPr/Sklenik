@@ -11,5 +11,7 @@ humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 if humidity is not None and temperature is not None:
     print('Teplota: {0:0.1f} °C'.format(temperature))
     print('Vlhkost: {0:0.1f} %'.format(humidity))
+    print("Surová hodnota teploty:", temperature)
+    print("Surová hodnota vlhkosti:", humidity)
 else:
     print('Chyba při čtení dat ze senzoru DHT11. Zkontrolujte připojení senzoru a zkuste to znovu.')
