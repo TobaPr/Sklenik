@@ -9,7 +9,7 @@ pwm_pin = 12  # Přizpůsobte číslo pinu podle vašeho zapojení
 GPIO.setup(pwm_pin, GPIO.OUT)
 
 # Inicializace PWM na pinu s frekvencí 100 Hz
-pwm = GPIO.PWM(pwm_pin, 100)
+pwm = GPIO.PWM(pwm_pin, 10000)
 
 pwm.start(100) 
 print('100%')
