@@ -13,7 +13,8 @@ rtc = adafruit_ds3231.DS3231(i2c)
 # Nastavení času RTC na aktuální čas (už není potřeba)
 # Získání aktuálního času
 now = time.localtime()
-rtc.datetime = now
+now2 = time.localtime(time.mktime(now) + 3600)
+rtc.datetime = now2
 print("Čas na RTC modulu byl nastaven na aktuální čas:", now)
 
 # Čtení aktuálního času z RTC modulu
