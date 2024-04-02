@@ -29,7 +29,11 @@ try:
     while True:
         # Čtení a výpis hodnoty vlhkosti půdy každou sekundu
         soil_moisture = read_soil_moisture()
+        vlhkost = 100 - (soil_moisture / 32767 * 100)
         print("Hodnota vlhkosti půdy:", soil_moisture)
+        print("Hodnota v % :", vlhkost)
+
+
         time.sleep(5)
 except KeyboardInterrupt:
     # Po ukončení programu provede čištění GPIO a vypne LED
