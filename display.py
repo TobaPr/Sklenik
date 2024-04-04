@@ -1,7 +1,6 @@
-
 import adafruit_character_lcd.character_lcd_i2c as character_lcd
 import board
-
+import time
 
 # Definice velikosti displeje (20 sloupců a 4 řádky)
 lcd_columns = 20
@@ -13,7 +12,7 @@ i2c = board.I2C()  # uses board.SCL and board.SDA
 
 
 # Inicializace objektu LCD s I2C adresou 0x27
-lcd = character_lcd.Character_LCD_I2C(i2c, lcd_columns, lcd_rows)
+lcd = character_lcd.Character_LCD_I2C(i2c, lcd_columns, lcd_rows, address=0x3f)
 
 # Vypnutí blikání kurzoru
 lcd.blink = False
