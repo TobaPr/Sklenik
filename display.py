@@ -1,29 +1,9 @@
-import board
-import busio
-import time
-
-from adafruit_character_lcd import character_lcd_i2c
-
-# Inicializace I2C sběrnice
-i2c = busio.I2C(board.SCL, board.SDA)
+import i2clcd
 
 
+lcd = i2clcd.i2clcd(i2c_bus=1, i2c_addr=0x3f, lcd_width=20)
+lcd.init()
 
-# Inicializace objektu LCD s I2C adresou 0x27
-#lcd = character_lcd.Character_LCD_I2C(i2c, lcd_columns, lcd_rows, address=0x3f)
-lcd = character_lcd_i2c.Character_LCD_I2C(i2c, 20, 4, address=0x3f)
+lcd.print_line('ahoj', line=0)
+lcd.print_line('tome ;)', line=1)
 
-# Zapnutí LCD displeje
-lcd.backlight = True
-
-# Nastavení jasu na 100 %
-lcd.brightness = 1.0
-
-# Výpis textu na displej
-lcd.message = "Hello\nworld!"
-
-# Pauza
-time.sleep(2)
-
-# Výpis dalšího textu na displej
-lcd.message = "Raspberry Pi\nLCD test"
