@@ -1,15 +1,8 @@
-from i2clcd import I2cLcd
-import board
+import i2clcd
 
-i2c = board.I2C()  # uses board.SCL and board.SDA
-
-
-#lcd = i2clcd.i2clcd(i2c_bus=1, i2c_addr=0x3f, lcd_width=20)
-lcd = I2cLcd(i2c, 0x3f, 4, 20) 
+lcd = i2clcd.i2clcd(i2c_bus=1, i2c_addr=0x3f, lcd_width=20)
 lcd.init()
 
-lcd.clear()
-
-# Zobraz text na displeji
-lcd.move_to(0, 0)
-lcd.putstr("Hello, world!")
+# fill a line by the text
+lcd.print_line('hello', line=0)
+lcd.print_line('world!', line=1, align='RIGHT')
