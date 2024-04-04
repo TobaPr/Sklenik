@@ -2,7 +2,7 @@ import i2clcd
 import time
 
 
-lcd = i2clcd.i2clcd(i2c_bus=1, i2c_addr=0x3f, lcd_width=16)
+lcd = i2clcd.i2clcd(i2c_bus=1, i2c_addr=0x27, lcd_width=16)
 lcd.init()
 lcd.set_backlight(True)
 
