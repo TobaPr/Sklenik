@@ -4,7 +4,7 @@ import time
 
 lcd = i2clcd.i2clcd(i2c_bus=1, i2c_addr=0x27, lcd_width=16)
 lcd.init()
-lcd.set_backlight(False)
+lcd.set_backlight(True)
 
 # fill a line by the text
 lcd.print_line('hello', line=0)
