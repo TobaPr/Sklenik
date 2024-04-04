@@ -14,11 +14,11 @@ i2c = board.I2C()  # uses board.SCL and board.SDA
 # Inicializace objektu LCD s I2C adresou 0x27
 lcd = character_lcd.Character_LCD_I2C(i2c, lcd_columns, lcd_rows, address=0x3f)
 
-# Vypnutí blikání kurzoru
-lcd.blink = False
+# Zapnutí LCD displeje
+lcd.backlight = True
 
-# Nastavení podsvícení na zelenou
-lcd.color = [0, 255, 0]
+# Nastavení jasu na 100 %
+lcd.brightness = 1.0
 
 # Výpis textu na displej
 lcd.message = "Hello\nworld!"
