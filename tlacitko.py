@@ -26,7 +26,7 @@ try:
     while True:
         # Přečtení stavu tlačítka
         button_state = GPIO.input(button_pin)
-        Vypis_na_LCD('Jsem připraven', '')
+        Vypis_na_LCD('Jsem pripraven', '')
 
         # Pokud je tlačítko stisknuto (zajímá nás změna stavu z vysokého na nízký)
         if button_state == GPIO.LOW:
