@@ -3,6 +3,8 @@ import time
 import i2clcd
 import adafruit_ds3231
 import board
+import Adafruit_DHT
+
 
 # Nastavení pinů GPIO
 button_pin = 16
@@ -21,7 +23,7 @@ def Vypis_na_LCD(text):
     lcd.set_backlight(True)
 
     # Výpis textu na displej
-    status = Dej_cas()
+    status = Dej_cas() + Dej_Teplotu()
 
     lcd.print_line(status, line=0)
     lcd.print_line(text, line=1)
@@ -36,9 +38,24 @@ def Dej_cas():
 
     # Formátování času do podoby HH:MM
     formatted_time = "{:02d}:{:02d}".format(current_time.tm_hour, current_time.tm_min)
-    
     return formatted_time
 
+def Dej_Teplotu():
+    # Definice typu senzoru a GPIO pinu, na kterém je připojen
+    sensor = Adafruit_DHT.DHT22
+    pin = 21  # GPIO pin 21 (vyberte si správný pin, na kterém je senzor připojen)
+
+    # Čtení dat ze senzoru
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+
+    # Kontrola, zda byla data úspěšně přečtena
+    if temperature is not None:
+        # Formátování teploty a vlhkosti do řetězce
+        formatted_data = '{0:0.1f} °C'.format(temperature)
+        return formatted_data
+    else:
+        return 'xx'
+    
 try:
     Vypis_na_LCD('Jsem pripraven')
     while True:
