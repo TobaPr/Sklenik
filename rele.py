@@ -13,12 +13,12 @@ try:
         # Zapneme relé (nastavíme pin na HIGH)
         GPIO.output(relay_pin, GPIO.HIGH)
         print("Relay ON")
-        time.sleep(5)  # Počkáme 5 sekund
+        time.sleep(20)  # Počkáme 5 sekund
 
         # Vypneme relé (nastavíme pin na LOW)
         GPIO.output(relay_pin, GPIO.LOW)
         print("Relay OFF")
-        time.sleep(5)  # Počkáme 5 sekund
+        time.sleep(20)  # Počkáme 5 sekund
 
 except KeyboardInterrupt:
     # Ukončení programu při stisknutí Ctrl+C

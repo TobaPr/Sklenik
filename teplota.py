@@ -1,7 +1,7 @@
 import Adafruit_DHT
 
 # Definice typu senzoru a GPIO pinu, na kterém je připojen
-sensor = Adafruit_DHT.DHT11
+sensor = Adafruit_DHT.DHT22
 pin = 21  # GPIO pin 21 (vyberte si správný pin, na kterém je senzor připojen)
 
 # Čtení dat ze senzoru
