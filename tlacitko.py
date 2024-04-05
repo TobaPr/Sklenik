@@ -23,7 +23,7 @@ def Vypis_na_LCD(text):
     lcd.set_backlight(True)
 
     # Výpis textu na displej
-    status = Dej_cas() + ' ' + Dej_teplotu() + ' °C'
+    status = Dej_cas() + ' ' + Dej_Teplotu() + ' °C'
     status = status.encode('utf-8')
     lcd.print_line(status, line=0)
     lcd.print_line(text, line=1)
