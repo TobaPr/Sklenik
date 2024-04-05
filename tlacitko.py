@@ -4,6 +4,7 @@ import i2clcd
 import adafruit_ds3231
 import board
 import Adafruit_DHT
+import Adafruit_ADS1x15
 
 
 # Nastavení pinů GPIO
@@ -23,8 +24,8 @@ def Vypis_na_LCD(text):
     lcd.set_backlight(True)
 
     # Výpis textu na displej
-    status = Dej_cas() + ' ' + Dej_Teplotu() + ' °C'
-    status = status.encode('utf-8')
+    status = Dej_cas() + ' ' + Dej_Teplotu() + 'C ' + Dej_vlhkost() + '%'
+    #status = status.encode('utf-8')
     lcd.print_line(status, line=0)
     lcd.print_line(text, line=1)
 
@@ -56,6 +57,12 @@ def Dej_Teplotu():
     else:
         return 'xx'
     
+def Dej_vlhkost():
+    adc = Adafruit_ADS1x15.ADS1115()
+    value = adc.read_adc(0, gain=1)  # Pokud chcete přesnější hodnoty, můžete změnit gain
+    vlhkost = 100 - (value / 32767 * 100)
+    return '{:.1f}%'.format(vlhkost)
+
 try:
     Vypis_na_LCD('Jsem pripraven')
     while True:
