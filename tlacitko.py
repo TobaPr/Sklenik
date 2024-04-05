@@ -7,19 +7,19 @@ relay_pin = 19
 
 # Nastavení režimu pinů GPIO
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(relay_pin, GPIO.OUT)
+GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Použití interního pull-up rezistoru
 
 try:
     while True:
         # Přečtení stavu tlačítka
         button_state = GPIO.input(button_pin)
 
-        # Pokud je tlačítko stisknuto (zajímá nás stisknutí)
-        if button_state == GPIO.HIGH:
+        # Pokud je tlačítko stisknuto (zajímá nás změna stavu z vysokého na nízký)
+        if button_state == GPIO.LOW:
             print("Tlačítko stisknuto. Přepínám stav relé.")
 
-            # Přepnutí stavu relé (pouze jedno stisknutí tlačítka)
+            # Přepnutí stavu relé
             relay_state = GPIO.input(relay_pin)
             GPIO.output(relay_pin, not relay_state)
 
