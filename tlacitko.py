@@ -23,8 +23,8 @@ def Vypis_na_LCD(text):
     lcd.set_backlight(True)
 
     # Výpis textu na displej
-    status = Dej_cas() + Dej_Teplotu()
-
+    status = Dej_cas() + ' ' + Dej_teplotu() + ' °C'
+    status = status.encode('utf-8')
     lcd.print_line(status, line=0)
     lcd.print_line(text, line=1)
 
@@ -51,7 +51,7 @@ def Dej_Teplotu():
     # Kontrola, zda byla data úspěšně přečtena
     if temperature is not None:
         # Formátování teploty a vlhkosti do řetězce
-        formatted_data = '{0:0.1f} °C'.format(temperature)
+        formatted_data = '{0:0.1f}'.format(temperature)
         return formatted_data
     else:
         return 'xx'
