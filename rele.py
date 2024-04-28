@@ -22,41 +22,57 @@ GPIO.setup(fan_pin, GPIO.OUT)
 
 try:
     while True:
-        # Dveře
-        GPIO.output(door_close_pin, GPIO.LOW )
-        GPIO.output(door_open_pin, GPIO.HIGH)
-        print("Door open")
-        time.sleep(5)  # Počkáme 5 sekund
-
-        GPIO.output(door_open_pin, GPIO.LOW)
-        GPIO.output(door_close_pin, GPIO.HIGH)
-        print("Door close")
-        time.sleep(5)  # Počkáme 5 sekund
-
-        # Okno
-        GPIO.output(win_close_pin, GPIO.LOW )
-        GPIO.output(win_open_pin, GPIO.HIGH)
-        print("Window open")
+        # ON
+        GPIO.output(door_open_pin, GPIO.HIGH )
+        print("Rele1 open")
         time.sleep(5)  # Počkáme 5 sekund
         
-        GPIO.output(win_open_pin, GPIO.LOW)
-        GPIO.output(win_close_pin, GPIO.HIGH)
-        print("Window close")
+        GPIO.output(door_close_pin, GPIO.HIGH )
+        print("Rele2 open")
         time.sleep(5)  # Počkáme 5 sekund
 
-        # Fan
-        GPIO.output(fan_pin, GPIO.HIGH)
-        print("Fan open")
-        time.sleep(5) 
-        GPIO.output(fan_pin, GPIO.LOW)
-        print("Fan close")
+        GPIO.output(win_open_pin, GPIO.HIGH )
+        print("Rele3 open")
+        time.sleep(5)  # Počkáme 5 
+        
+        GPIO.output(win_close_pin, GPIO.HIGH )
+        print("Rele4 open")
+        time.sleep(5)  # Počkáme 5 sekund
 
-        #ventil
-        GPIO.output(ventil_pin, GPIO.HIGH)
-        print("Ventil open")
-        time.sleep(5) 
-        GPIO.output(ventil_pin, GPIO.LOW)
-        print("Ventil close")
+        GPIO.output(ventil_pin, GPIO.HIGH )
+        print("Rele7 open")
+        time.sleep(5)  # Počkáme 5 sekund
+
+        GPIO.output(fan_pin, GPIO.HIGH )
+        print("Rele8 open")
+        time.sleep(5)  # Počkáme 5 sekund
+
+
+
+        # OFF
+        GPIO.output(door_open_pin, GPIO.LOW)
+        print("Rele1 open")
+        time.sleep(5)  # Počkáme 5 sekund
+        
+        GPIO.output(door_close_pin, GPIO.LOW )
+        print("Rele2 open")
+        time.sleep(5)  # Počkáme 5 sekund
+
+        GPIO.output(win_open_pin, GPIO.LOW )
+        print("Rele3 open")
+        time.sleep(5)  # Počkáme 5 
+        
+        GPIO.output(win_close_pin, GPIO.LOW )
+        print("Rele4 open")
+        time.sleep(5)  # Počkáme 5 sekund
+
+        GPIO.output(ventil_pin, GPIO.LOW )
+        print("Rele7 open")
+        time.sleep(5)  # Počkáme 5 sekund
+
+        GPIO.output(fan_pin, GPIO.LOW )
+        print("Rele8 open")
+        time.sleep(5)  # Počkáme 5 sekund
 
 
 except KeyboardInterrupt:
