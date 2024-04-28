@@ -7,7 +7,10 @@ import Adafruit_DHT
 import Adafruit_ADS1x15
 
 # Konstanty
-MotorMovingTime = 3 #doba po kterou se pohybuje motor
+DoorMovingTime = 3 # doba po kterou se pohybuje motor u dveří
+WinMovingTime = 3 # doba po kterou se pohybuje motor u okna
+VentilMovingTime = 3 # doba po kterou se pohybuje ventil
+FanDelay = 3
 
 
 # Nastavení pinů pro ovládání tlačítek
@@ -99,9 +102,9 @@ def Otevri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_open_pin, GPIO.LOW)
     print("Otevírám dveře")
-    Vypis_na_LCD('Otevreno')
+    Vypis_na_LCD('Oteviram dvere..')
 
-    time.sleep(MotorMovingTime)  # Počkáme než dojede motor... 
+    time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
 
 def Zavri_dvere():
     # pro ovevírání a zavírání používáme dvě relé
@@ -109,14 +112,76 @@ def Zavri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_close_pin, GPIO.LOW)
     print("Zavirám dveře")
-    Vypis_na_LCD('Zavreno')
-    time.sleep(MotorMovingTime)  # Počkáme než dojede motor... 
+    Vypis_na_LCD('Zaviram dvere...')
+    time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
 
+def Otevri_okno():
+    # pro ovevírání a zavírání používáme dvě relé
+    GPIO.output(win_close_pin, GPIO.HIGH)
+    time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
+    GPIO.output(win_open_pin, GPIO.LOW)
+    print("Otevírám okno")
+    Vypis_na_LCD('Oteviram okno...')
+    time.sleep(WinMovingTime)  # Počkáme než dojede motor... 
+
+def Zavri_okno():
+    # pro ovevírání a zavírání používáme dvě relé
+    GPIO.output(win_open_pin, GPIO.HIGH)
+    time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
+    GPIO.output(win_close_pin, GPIO.LOW)
+    print("Zavirám okno")
+    Vypis_na_LCD('Zaviram okno....')
+    time.sleep(WinMovingTime)  # Počkáme než dojede motor... 
+
+def Otevri_ventil():
+    GPIO.output(ventil_pin, GPIO.LOW)
+    print("Otevírám ventil")
+    Vypis_na_LCD('Oteviram ventil.')
+    time.sleep(VentilMovingTime)
+
+def Zavri_ventil():
+    GPIO.output(ventil_pin, GPIO.HIGH)
+    print("Zavírám ventil")
+    Vypis_na_LCD('Zaviram ventil..')
+    time.sleep(VentilMovingTime)    
+
+def FAN_ON():
+    GPIO.output(fan_pin, GPIO.LOW)
+    print("Zapinam vetrani")
+    Vypis_na_LCD('Zapinam vetrani.')
+    time.sleep(FanDelay)
+
+def FAN_OFF():
+    GPIO.output(fan_pin, GPIO.HIGH)
+    print("Vypinam vetrani")
+    Vypis_na_LCD('Vypinam vetrani.') 
+
+# Obslužné metody pro tlačítka.
 def Button1_Pressed():
-    if GPIO.input(door_open_pin):
+    if GPIO.input(door_open_pin): # pokud jsou dveře zavřené 
         Otevri_dvere()
     else:
         Zavri_dvere()
+
+def Button2_Pressed():
+    # Obslužná metoda pro tlačítko 2. Ručně Otevírá / zavírá okno.
+    if GPIO.input(win_open_pin): # pokud je okno zavřené 
+        Otevri_okno()
+    else:
+        Zavri_okno()
+
+def Button3_Pressed():
+    if GPIO.input(ventil_pin): # pokud je ventil zavreny 
+        Otevri_ventil()
+    else:
+        Zavri_ventil()
+
+def Button4_Pressed():
+    if GPIO.input(fan_pin): # pokud je ventil zavreny 
+        FAN_ON()
+    else:
+        FAN_OFF()
+
 
 try:
     Vypis_na_LCD('Jsem pripraven')
@@ -127,26 +192,19 @@ try:
         button2_state = GPIO.input(button2_pin)
         button3_state = GPIO.input(button3_pin)
         button4_state = GPIO.input(button4_pin)
-       
 
         # Pokud je tlačítko stisknuto (zajímá nás změna stavu z vysokého na nízký)
         if button1_state == GPIO.LOW:
             Button1_Pressed()
-        
 
         if button2_state == GPIO.LOW:
-            print("Tlačítko 2 stisknuto. Zaviram dvere")
-            Zavri_dvere()
+            Button2_Pressed()
            
-
-        
         if button3_state == GPIO.LOW:
-            print("Tlačítko 3 stisknuto.")
-            Vypis_na_LCD('Tlacitko 3')
+            Button3_Pressed()
 
         if button4_state == GPIO.LOW:
-            print("Tlačítko 4 stisknuto.")
-            Vypis_na_LCD('Tlacitko 4')
+            Button4_Pressed()
 
 
 except KeyboardInterrupt:
