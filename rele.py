@@ -18,12 +18,14 @@ GPIO.setup(win_close_pin, GPIO.OUT)
 GPIO.setup(ventil_pin, GPIO.OUT)
 GPIO.setup(fan_pin, GPIO.OUT)
 
-GPIO.output(door_open_pin, GPIO.LOW)
-GPIO.output(door_close_pin, GPIO.LOW)
-GPIO.output(win_open_pin, GPIO.LOW)
-GPIO.output(win_close_pin, GPIO.LOW)
-GPIO.output(ventil_pin, GPIO.LOW)
-GPIO.output(fan_pin, GPIO.LOW)
+GPIO.output(door_open_pin, False)
+GPIO.output(door_close_pin, False)
+GPIO.output(win_open_pin, False)
+GPIO.output(win_close_pin, False)
+GPIO.output(ventil_pin, False)
+GPIO.output(fan_pin, False)
+
+time.sleep(5)
 
 try:
     while True:
