@@ -11,7 +11,14 @@ fan_pin = 20
 
 # Nastavíme režim pinu jako výstup
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(relay_pin, GPIO.OUT)
+GPIO.setup(door_open_pin, GPIO.OUT)
+GPIO.setup(door_close_pin, GPIO.OUT)
+GPIO.setup(win_open_pin, GPIO.OUT)
+GPIO.setup(win_close_pin, GPIO.OUT)
+GPIO.setup(ventil_pin, GPIO.OUT)
+GPIO.setup(fan_pin, GPIO.OUT)
+
+
 
 try:
     while True:
@@ -50,7 +57,7 @@ try:
         time.sleep(5) 
         GPIO.output(ventil_pin, GPIO.LOW)
         print("Ventil close")
-        
+
 
 except KeyboardInterrupt:
     # Ukončení programu při stisknutí Ctrl+C
