@@ -35,12 +35,12 @@ GPIO.setup(ventil_pin, GPIO.OUT)
 GPIO.setup(fan_pin, GPIO.OUT)
 
 def Inicializuj_rele():
-    GPIO.output(door_open_pin, GPIO.LOW)
-    GPIO.output(door_close_pin, GPIO.LOW)
-    GPIO.output(win_open_pin, GPIO.LOW)
-    GPIO.output(win_close_pin, GPIO.LOW)
-    GPIO.output(ventil_pin, GPIO.LOW)
-    GPIO.output(fan_pin, GPIO.LOW)
+    GPIO.output(door_open_pin, GPIO.HIGH)
+    GPIO.output(door_close_pin, GPIO.HIGH)
+    GPIO.output(win_open_pin, GPIO.HIGH)
+    GPIO.output(win_close_pin, GPIO.HIGH)
+    GPIO.output(ventil_pin, GPIO.HIGH)
+    GPIO.output(fan_pin, GPIO.HIGH)
 
 
 def Vypis_na_LCD(text):
@@ -85,19 +85,20 @@ def Dej_Teplotu():
 
 def Otevri_dvere():
     # pro ovevírání a zavírání používáme dvě relé
-    GPIO.output(door_close_pin, GPIO.LOW)
+    GPIO.output(door_close_pin, GPIO.HIGH)
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
-    GPIO.output(door_open_pin, GPIO.HIGH)
+    GPIO.output(door_open_pin, GPIO.LOW)
     print("Otevírám dveře")
-    time.sleep(30)  # Počkáme než dojede motor... 
+    time.sleep(5)  # Počkáme než dojede motor... 
 
 def Zavri_dvere():
     # pro ovevírání a zavírání používáme dvě relé
-    GPIO.output(door_open_pin, GPIO.LOW)
+    GPIO.output(door_open_pin, GPIO.HIGH)
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
-    GPIO.output(door_close_pin, GPIO.HIGH)
+    GPIO.output(door_close_pin, GPIO.LOW)
     print("Otevírám dveře")
-    time.sleep(30)  # Počkáme než dojede motor... 
+    time.sleep(5)  # Počkáme než dojede motor... 
+    
     
 def Dej_vlhkost():
     adc = Adafruit_ADS1x15.ADS1115()
