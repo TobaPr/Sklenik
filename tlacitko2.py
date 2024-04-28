@@ -6,6 +6,9 @@ import board
 import Adafruit_DHT
 import Adafruit_ADS1x15
 
+# Konstanty
+MotorMovingTime = 3 #doba po kterou se pohybuje motor
+
 
 # Nastavení pinů pro ovládání tlačítek
 button1_pin = 23
@@ -82,6 +85,13 @@ def Dej_Teplotu():
         return formatted_data
     else:
         return 'xx'
+    
+def Dej_vlhkost():
+    adc = Adafruit_ADS1x15.ADS1115()
+    value = adc.read_adc(0, gain=1)  # Pokud chcete přesnější hodnoty, můžete změnit gain
+    vlhkost = 100 - (value / 32767 * 100)
+    return '{:.1f}%'.format(vlhkost)
+
 
 def Otevri_dvere():
     # pro ovevírání a zavírání používáme dvě relé
@@ -89,22 +99,24 @@ def Otevri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_open_pin, GPIO.LOW)
     print("Otevírám dveře")
-    time.sleep(5)  # Počkáme než dojede motor... 
+    Vypis_na_LCD('Otevreno')
+
+    time.sleep(MotorMovingTime)  # Počkáme než dojede motor... 
 
 def Zavri_dvere():
     # pro ovevírání a zavírání používáme dvě relé
     GPIO.output(door_open_pin, GPIO.HIGH)
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_close_pin, GPIO.LOW)
-    print("Otevírám dveře")
-    time.sleep(5)  # Počkáme než dojede motor... 
-    
-    
-def Dej_vlhkost():
-    adc = Adafruit_ADS1x15.ADS1115()
-    value = adc.read_adc(0, gain=1)  # Pokud chcete přesnější hodnoty, můžete změnit gain
-    vlhkost = 100 - (value / 32767 * 100)
-    return '{:.1f}%'.format(vlhkost)
+    print("Zavirám dveře")
+    Vypis_na_LCD('Zavreno')
+    time.sleep(MotorMovingTime)  # Počkáme než dojede motor... 
+
+def Button1_Pressed():
+    if GPIO.input(door_open_pin):
+        Otevri_dvere()
+    else:
+        Zavri_dvere()
 
 try:
     Vypis_na_LCD('Jsem pripraven')
@@ -119,15 +131,13 @@ try:
 
         # Pokud je tlačítko stisknuto (zajímá nás změna stavu z vysokého na nízký)
         if button1_state == GPIO.LOW:
-            print("Tlačítko 1 stisknuto. Oteviram dvere.")
-            Otevri_dvere()
-            Vypis_na_LCD('Otevreno')
+            Button1_Pressed()
         
 
         if button2_state == GPIO.LOW:
             print("Tlačítko 2 stisknuto. Zaviram dvere")
             Zavri_dvere()
-            Vypis_na_LCD('Zavreno')
+           
 
         
         if button3_state == GPIO.LOW:
