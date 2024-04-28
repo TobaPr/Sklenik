@@ -8,9 +8,9 @@ import Adafruit_ADS1x15
 
 
 # Nastavení pinů GPIO
-button1_pin = 27
+button1_pin = 23
 button2_pin = 22
-button3_pin = 23
+button3_pin = 27
 button4_pin = 24 
 
 
