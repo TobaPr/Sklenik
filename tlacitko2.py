@@ -7,20 +7,40 @@ import Adafruit_DHT
 import Adafruit_ADS1x15
 
 
-# Nastavení pinů GPIO
+# Nastavení pinů pro ovládání tlačítek
 button1_pin = 23
 button2_pin = 22
 button3_pin = 27
 button4_pin = 24 
 
+# Definujeme pin pro ovládání relé
+door_open_pin = 5
+door_close_pin = 6
+win_open_pin = 13
+win_close_pin = 19
+ventil_pin = 16
+fan_pin = 20
 
 # Nastavení režimu pinů GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(button1_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Použití interního pull-up rezistoru
-GPIO.setup(button2_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Použití interního pull-up rezistoru
-GPIO.setup(button3_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Použití interního pull-up 
-GPIO.setup(button4_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Použití interního pull-up rezistoru
+GPIO.setup(button2_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
+GPIO.setup(button3_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
+GPIO.setup(button4_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
+GPIO.setup(door_open_pin, GPIO.OUT)
+GPIO.setup(door_close_pin, GPIO.OUT)
+GPIO.setup(win_open_pin, GPIO.OUT)
+GPIO.setup(win_close_pin, GPIO.OUT)
+GPIO.setup(ventil_pin, GPIO.OUT)
+GPIO.setup(fan_pin, GPIO.OUT)
 
+def Inicializuj_rele():
+    GPIO.output(door_open_pin, GPIO.LOW)
+    GPIO.output(door_close_pin, GPIO.LOW)
+    GPIO.output(win_open_pin, GPIO.LOW)
+    GPIO.output(win_close_pin, GPIO.LOW)
+    GPIO.output(ventil_pin, GPIO.LOW)
+    GPIO.output(fan_pin, GPIO.LOW)
 
 
 def Vypis_na_LCD(text):
@@ -62,6 +82,22 @@ def Dej_Teplotu():
         return formatted_data
     else:
         return 'xx'
+
+def Otevri_dvere():
+    # pro ovevírání a zavírání používáme dvě relé
+    GPIO.output(door_close_pin, GPIO.LOW)
+    time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
+    GPIO.output(door_open_pin, GPIO.HIGH)
+    print("Otevírám dveře")
+    time.sleep(30)  # Počkáme než dojede motor... 
+
+def Zavri_dvere():
+    # pro ovevírání a zavírání používáme dvě relé
+    GPIO.output(door_open_pin, GPIO.LOW)
+    time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
+    GPIO.output(door_close_pin, GPIO.HIGH)
+    print("Otevírám dveře")
+    time.sleep(30)  # Počkáme než dojede motor... 
     
 def Dej_vlhkost():
     adc = Adafruit_ADS1x15.ADS1115()
@@ -71,6 +107,7 @@ def Dej_vlhkost():
 
 try:
     Vypis_na_LCD('Jsem pripraven')
+    Inicializuj_rele()
     while True:
         # Přečtení stavu tlačítka
         button1_state = GPIO.input(button1_pin)
@@ -81,12 +118,16 @@ try:
 
         # Pokud je tlačítko stisknuto (zajímá nás změna stavu z vysokého na nízký)
         if button1_state == GPIO.LOW:
-            print("Tlačítko 1 stisknuto.")
-            Vypis_na_LCD('Tlacitko 1')
+            print("Tlačítko 1 stisknuto. Oteviram dvere.")
+            Otevri_dvere()
+            Vypis_na_LCD('Otevreno')
+        
 
         if button2_state == GPIO.LOW:
-            print("Tlačítko 2 stisknuto.")
-            Vypis_na_LCD('Tlacitko 2')
+            print("Tlačítko 2 stisknuto. Zaviram dvere")
+            Zavri_dvere()
+            Vypis_na_LCD('Zavreno')
+
         
         if button3_state == GPIO.LOW:
             print("Tlačítko 3 stisknuto.")
