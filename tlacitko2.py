@@ -5,6 +5,8 @@ import adafruit_ds3231
 import board
 import Adafruit_DHT
 import Adafruit_ADS1x15
+from rak811.rak811_v3 import Rak811
+
 
 # Konstanty
 DoorMovingTime = 3 # doba po kterou se pohybuje motor u dveří
@@ -33,20 +35,31 @@ GPIO.setup(button1_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Použití interní
 GPIO.setup(button2_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
 GPIO.setup(button3_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
 GPIO.setup(button4_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
-GPIO.setup(door_open_pin, GPIO.OUT)
-GPIO.setup(door_close_pin, GPIO.OUT)
-GPIO.setup(win_open_pin, GPIO.OUT)
-GPIO.setup(win_close_pin, GPIO.OUT)
-GPIO.setup(ventil_pin, GPIO.OUT)
-GPIO.setup(fan_pin, GPIO.OUT)
+GPIO.setup(door_open_pin, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(door_close_pin, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(win_open_pin, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(win_close_pin, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(ventil_pin, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(fan_pin, GPIO.OUT, initial=GPIO.HIGH)
 
-def Inicializuj_rele():
-    GPIO.output(door_open_pin, GPIO.HIGH)
-    GPIO.output(door_close_pin, GPIO.HIGH)
-    GPIO.output(win_open_pin, GPIO.HIGH)
-    GPIO.output(win_close_pin, GPIO.HIGH)
-    GPIO.output(ventil_pin, GPIO.HIGH)
-    GPIO.output(fan_pin, GPIO.HIGH)
+
+
+def JoinToLora():
+    lora = Rak811()
+    lora.set_config('lora:work_mode:0')
+    lora.set_config('lora:join_mode:0')
+    lora.set_config('lora:region:EU868')
+    lora.set_config('lora:app_eui:AC1F09FFF8680811')
+    lora.set_config('lora:app_key:AC1F09FFFE03DD04AC1F09FFF8680811')
+    lora.join()
+    lora.set_config('lora:dr:5')
+    lora.send_hex('7374617274',100)
+    lora.close()
+
+def SendMesagge(text,port):
+    lora = Rak811()
+    lora.send(text,port)
+    lora.close()
 
 
 def Vypis_na_LCD(text):
@@ -102,7 +115,9 @@ def Otevri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_open_pin, GPIO.LOW)
     print("Otevírám dveře")
+    SendMesagge('Oteviram dvere', 101)
     Vypis_na_LCD('Oteviram dvere..')
+    
 
     time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
 
@@ -112,6 +127,7 @@ def Zavri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_close_pin, GPIO.LOW)
     print("Zavirám dveře")
+    SendMesagge('Zaviram dvere', 101)
     Vypis_na_LCD('Zaviram dvere...')
     time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
 
@@ -185,7 +201,7 @@ def Button4_Pressed():
 
 try:
     Vypis_na_LCD('Jsem pripraven')
-    Inicializuj_rele()
+    JoinToLora() # Zalogujeme se do sítě
     while True:
         # Přečtení stavu tlačítka
         button1_state = GPIO.input(button1_pin)
