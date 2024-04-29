@@ -53,7 +53,7 @@ def JoinToLora():
     lora.set_config('lora:app_key:AC1F09FFFE03DD04AC1F09FFF8680811')
     lora.join()
     lora.set_config('lora:dr:5')
-    lora.send_hex('7374617274',100)
+    lora.send('Start',100)
     lora.close()
 
 def SendMesagge(text,port):
