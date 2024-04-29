@@ -55,10 +55,12 @@ def JoinToLora():
     lora.set_config('lora:dr:5')
     lora.send('Start',100)
     lora.close()
+    print("joinul jsem se")
 
 def SendMesagge(text,port):
+    print("posilam zpravu")
     lora = Rak811()
-    lora.send(text,port)
+    lora.send(text,101)
     lora.close()
 
 
@@ -115,7 +117,7 @@ def Otevri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_open_pin, GPIO.LOW)
     print("Otevírám dveře")
-    SendMesagge('Oteviram dvere', 101)
+    SendMesagge('O', 101)
     Vypis_na_LCD('Oteviram dvere..')
     
 
@@ -127,7 +129,7 @@ def Zavri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_close_pin, GPIO.LOW)
     print("Zavirám dveře")
-    SendMesagge('Zaviram dvere', 101)
+    SendMesagge('C', 101)
     Vypis_na_LCD('Zaviram dvere...')
     time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
 
