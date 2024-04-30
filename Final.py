@@ -304,10 +304,15 @@ def CheckConditions(print, send, control=False):
     #Reagujeme na podmínky ve skleníku
     if control:    
         hours, minutes = map(int, RTC.split(':'))  
-        SetDoor(AirTemperature)
-        SetWindow(AirTemperature)
-        SetValve(SoilHumidity1, SoilHumidity2, hours)
-        SetFan(AirTemperature)
+        Temperature = int(AirTemperature)
+        SoilHumid1 = int(SoilHumidity1)
+        SoilHumid2 = int(SoilHumidity2)
+    
+
+        SetDoor(Temperature)
+        SetWindow(Temperature)
+        SetValve(SoilHumid1, SoilHumid2, hours)
+        SetFan(Temperature)
     
 
 # ---------    Hlavní tělo programu    ---------    
