@@ -188,10 +188,10 @@ def Otevri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_open_pin, GPIO.LOW)
     print("Otevírám dveře")
-    SendMesagge('O', 101)
+    SendMesagge('MO', 101) #(manual open)
     PrintMesagge('Oteviram dvere..','')
     time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
-    PrintStatus()
+    CheckConditions(print=True, send=False)
 
 def Zavri_dvere():
     # pro ovevírání a zavírání používáme dvě relé
@@ -199,10 +199,11 @@ def Zavri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_close_pin, GPIO.LOW)
     print("Zavirám dveře")
-    SendMesagge('C', 101)
+    SendMesagge('MC', 101) # MC (manual close)
     PrintMesagge('Zaviram dvere...','')
     time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
-    PrintStatus()
+    # znovu zajistíme kontrolu podmínek ve skleníku
+    CheckConditions(print=True, send=True)
 
 def Otevri_okno():
     # pro ovevírání a zavírání používáme dvě relé
@@ -271,12 +272,17 @@ def Button4_Pressed():
     else:
         FAN_OFF()
 
-def CheckConditions():
+def CheckConditions(print, send):
     AirTemperature, AirHumidity = CheckAirStatus()
     SoilHumidity1, SoilHumidity2 = CheckSoilSatus()
-    PrintStatus(AirTemperature, AirHumidity, SoilHumidity1, SoilHumidity2)
-    
 
+    #příznak zda vytiskneme na LCD display
+    if print:
+        PrintStatus(AirTemperature, AirHumidity, SoilHumidity1, SoilHumidity2)
+
+    if send:
+        #tady budeme odesíla
+        print("Odesláno")
 
 
 
@@ -284,9 +290,8 @@ def CheckConditions():
 # ---------    Hlavní tělo programu    ---------    
 try:
     JoinToLora() # Zalogujeme se do sítě
-    CheckConditions() # Ověříme podmínky ve skleníku
-    
-    schedule.every(1).minutes.do(CheckConditions)
+    CheckConditions(print = True, send= True) # Ověříme podmínky ve skleníku
+    schedule.every(1).minutes.do(CheckConditions(True,False))
     
 
     while True:
