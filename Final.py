@@ -156,8 +156,8 @@ def CheckSoilSatus():
     print("Analog Value 2: ", channel2.value, "Voltage 2: ", channel2.voltage)
     print("Analog Value 3: ", channel3.value, "Voltage 3: ", channel3.voltage)
 
-    SH1 = '{:.1f}'.format(100 - (channel0 / 32767 * 100))
-    SH2 = '{:.1f}'.format(100 - (channel3 / 32767 * 100))
+    SH1 = '{:.1f}'.format(100 - (channel0.value / 32767 * 100))
+    SH2 = '{:.1f}'.format(100 - (channel3.value / 32767 * 100))
     print("vlhkost1: " + SH1)
     print("vlhkost2: " + SH2)
     return SH1, SH2
