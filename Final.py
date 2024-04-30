@@ -278,12 +278,7 @@ def CheckConditions(print, send):
 
     #příznak zda vytiskneme na LCD display
     if print:
-        PrintStatus(AirTemperature, AirHumidity, SoilHumidity1, SoilHumidity2)
-
-    if send:
-        #tady budeme odesíla
-        print("Odesláno")
-
+        PrintStatus(AirTemperature, AirHumidity, SoilHumidity1, SoilHumidity2)       
 
 
 
