@@ -176,7 +176,6 @@ def PrintMesagge(line1, line2):
   # Doplnění řetězce na požadovanou délku
     if len(line1) < 16:
         line1 = line1.ljust(16, ' ')
-    line2 = SoilHumidity1 + SoilHumidity2
     if len(line2) < 16:
         line2 = line2.ljust(16, ' ')
     lcd.print_line(line1, line=0)
