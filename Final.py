@@ -13,10 +13,10 @@ from rak811.rak811_v3 import Rak811
 
 
 # Konstanty
-DoorMovingTime = 3 # doba po kterou se pohybuje motor u dveří
-WinMovingTime = 3 # doba po kterou se pohybuje motor u okna
-VentilMovingTime = 3 # doba po kterou se pohybuje ventil
-FanDelay = 3
+DoorMovingTime = 45 # doba po kterou se pohybuje motor u dveří
+WinMovingTime = 30 # doba po kterou se pohybuje motor u okna
+VentilMovingTime = 30 # doba po kterou se pohybuje ventil
+FanDelay = 1
 
 
 # Nastavení pinů pro ovládání tlačítek
@@ -260,10 +260,10 @@ def SetDoor(Temperature):
 
 def SetWindow(Temperature):
     if Temperature > 25:
-        OpenDoor('A')
+        OpenWindow('A')
 
     if Temperature < 22:
-        CloseDoor('A')
+        CloseWindow('A')
 
 def SetValve(SH1, SH2, Hour):
     if Hour > 22 and Hour < 8:
