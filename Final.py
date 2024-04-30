@@ -148,7 +148,7 @@ def CheckSoilSatus():
     Sensor3 = adc.read_adc(2, gain=1)
     Sensor4 = adc.read_adc(3, gain=1)
 
-    print("AD hodnoty: " + Sensor1 + ' ' + Sensor2 + ' ' + Sensor3 + ' ' + Sensor4)
+    print("AD hodnoty: " + str(Sensor1) + ' ' + str(Sensor2) + ' ' + str(Sensor3) + ' ' + str(Sensor4))
     SH2 = '{:.1f}'.format(100 - (Sensor4 / 32767 * 100))
     print("vlhkost1: " + SH1)
     print("vlhkost2: " + SH2)
