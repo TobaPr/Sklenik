@@ -6,9 +6,10 @@ import i2clcd
 import adafruit_ds3231
 import board
 import Adafruit_DHT
-import Adafruit_ADS1x15 as ADS
-from Adafruit_ADS1x15.analog_in import AnalogIn
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
 from rak811.rak811_v3 import Rak811
+
 
 
 # Konstanty
