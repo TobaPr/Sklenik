@@ -6,7 +6,8 @@ import i2clcd
 import adafruit_ds3231
 import board
 import Adafruit_DHT
-import Adafruit_ADS1x15
+import Adafruit_ADS1x15 as ADS
+from Adafruit_ADS1x15.analog_in import AnalogIn
 from rak811.rak811_v3 import Rak811
 
 
@@ -134,22 +135,28 @@ def CheckAirStatus():
     return AT, AH
 
     
-def Dej_vlhkost():
-    adc = Adafruit_ADS1x15.ADS1115()
-    value = adc.read_adc(0, gain=1)  # Pokud chcete přesnější hodnoty, můžete změnit gain
-    vlhkost = 100 - (value / 32767 * 100)
-    return '{:.1f}%'.format(vlhkost)
+#def Dej_vlhkost():
+    #adc = Adafruit_ADS1x15.ADS1115()
+    #value = adc.read_adc(0, gain=1)  # Pokud chcete přesnější hodnoty, můžete změnit gain
+    #vlhkost = 100 - (value / 32767 * 100)
+    #return '{:.1f}%'.format(vlhkost)
 
 def CheckSoilSatus():
-    adc = Adafruit_ADS1x15.ADS1115()
-    Sensor1 = adc.read_adc(0, gain=1)  
-    SH1 = '{:.1f}'.format(100 - (Sensor1 / 32767 * 100))
-    Sensor2 = adc.read_adc(1, gain=1) 
-    Sensor3 = adc.read_adc(2, gain=1)
-    Sensor4 = adc.read_adc(3, gain=1)
+    i2c = board.I2C()  
+    ads = ADS.ADS1115(i2c)
+    # Define the analog input channels
+    channel0 = AnalogIn(ads, ADS.P0)
+    channel1 = AnalogIn(ads, ADS.P1)
+    channel2 = AnalogIn(ads, ADS.P2)
+    channel3 = AnalogIn(ads, ADS.P3)
 
-    print("AD hodnoty: " + str(Sensor1) + ' ' + str(Sensor2) + ' ' + str(Sensor3) + ' ' + str(Sensor4))
-    SH2 = '{:.1f}'.format(100 - (Sensor4 / 32767 * 100))
+    print("Analog Value 0: ", channel0.value, "Voltage 0: ", channel0.voltage)
+    print("Analog Value 1: ", channel1.value, "Voltage 1: ", channel1.voltage)
+    print("Analog Value 2: ", channel2.value, "Voltage 2: ", channel2.voltage)
+    print("Analog Value 3: ", channel3.value, "Voltage 3: ", channel3.voltage)
+
+    SH1 = '{:.1f}'.format(100 - (channel0 / 32767 * 100))
+    SH2 = '{:.1f}'.format(100 - (channel3 / 32767 * 100))
     print("vlhkost1: " + SH1)
     print("vlhkost2: " + SH2)
     return SH1, SH2
