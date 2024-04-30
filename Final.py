@@ -286,7 +286,7 @@ def CheckConditions(print, send):
 try:
     JoinToLora() # Zalogujeme se do sítě
     CheckConditions(print = True, send= True) # Ověříme podmínky ve skleníku
-    schedule.every(1).minutes.do(CheckConditions(True,False))
+    schedule.every(1).minutes.do(CheckConditions, True,False)
     
 
     while True:
