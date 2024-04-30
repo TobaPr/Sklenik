@@ -142,9 +142,9 @@ def Dej_vlhkost():
 
 def CheckSoilSatus():
     adc = Adafruit_ADS1x15.ADS1115()
-    Sensor1 = adc.read_adc(0, gain=1)  # Pokud chcete přesnější hodnoty, můžete změnit gain
-    Sensor2 = adc.read_adc(3, gain=1) 
+    Sensor1 = adc.read_adc(0, gain=1)  
     SH1 = '{:.1f}'.format(100 - (Sensor1 / 32767 * 100))
+    Sensor2 = adc.read_adc(3, gain=2) 
     SH2 = '{:.1f}'.format(100 - (Sensor2 / 32767 * 100))
     print("vlhkost1: " + SH1)
     print("vlhkost2: " + SH2)
