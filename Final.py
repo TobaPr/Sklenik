@@ -17,10 +17,10 @@ VentilMovingTime = 3 # doba po kterou se pohybuje ventil
 FanDelay = 3
 
 #Globalni proměnne... 
-AirTemperature = 0
-AirHumidity =  0
-SoilHumidity1 = 0
-SoilHumidity2 = 0
+AirTemperature = 0.0
+AirHumidity =  0.0
+SoilHumidity1 = 0.0
+SoilHumidity2 = 0.0
 
 
 # Nastavení pinů pro ovládání tlačítek
@@ -44,9 +44,9 @@ GPIO.setup(button2_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(button3_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
 GPIO.setup(button4_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
 GPIO.setup(door_open_pin, GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(door_close_pin, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(door_close_pin, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(win_open_pin, GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(win_close_pin, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(win_close_pin, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(ventil_pin, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(fan_pin, GPIO.OUT, initial=GPIO.HIGH)
 
@@ -160,12 +160,13 @@ def PrintStatus():
     lcd.set_backlight(True)
 
     # Sestavení řetězců 
-    line1 = Dej_cas() + ' ' + AirTemperature + ' ' + AirHumidity
+    line1 = Dej_cas() + ' ' + str(AirTemperature) + ' ' + str(AirHumidity)
+    line2 = str(SoilHumidity1) + str(SoilHumidity2)
     
     # Doplnění řetězce na požadovanou délku
     if len(line1) < 16:
         line1 = line1.ljust(16, ' ')
-    line2 = SoilHumidity1 + SoilHumidity2
+    
     if len(line2) < 16:
         line2 = line2.rjust(16, ' ')
 
