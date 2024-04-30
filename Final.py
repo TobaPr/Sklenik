@@ -16,12 +16,6 @@ WinMovingTime = 3 # doba po kterou se pohybuje motor u okna
 VentilMovingTime = 3 # doba po kterou se pohybuje ventil
 FanDelay = 3
 
-#Globalni proměnne... 
-AirTemperature = 0.0
-AirHumidity =  0.0
-SoilHumidity1 = 0.0
-SoilHumidity2 = 0.0
-
 
 # Nastavení pinů pro ovládání tlačítek
 button1_pin = 23
@@ -132,12 +126,12 @@ def CheckAirStatus():
     # Čtení dat ze senzoru
     humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
     if temperature and humidity is not None:
-        AirTemperature = '{:.1f}'.format(temperature)
-        AirHumidity = '{:.1f}'.format(humidity)
+        AT = '{:.1f}'.format(temperature)
+        AH = '{:.1f}'.format(humidity)
     else:
-        AirTemperature = '{:.1f}'.format(0)
-        AirHumidity = '{:.1f}'.format(0)
-
+        AT = '{:.1f}'.format(0)
+        AH = '{:.1f}'.format(0)
+    return AT, AH
 
     
 def Dej_vlhkost():
@@ -150,19 +144,20 @@ def CheckSoilSatus():
     adc = Adafruit_ADS1x15.ADS1115()
     Sensor1 = adc.read_adc(0, gain=1)  # Pokud chcete přesnější hodnoty, můžete změnit gain
     Sensor2 = adc.read_adc(3, gain=1) 
-    SoilHumidity1 = '{:.1f}'.format(100 - (Sensor1 / 32767 * 100))
-    SoilHumidity2 = '{:.1f}'.format(100 - (Sensor2 / 32767 * 100))
-    
-def PrintStatus():
+    SH1 = '{:.1f}'.format(100 - (Sensor1 / 32767 * 100))
+    SH2 = '{:.1f}'.format(100 - (Sensor2 / 32767 * 100))
+    return SH1, SH2
+
+def PrintStatus(AT, AH, SH1, SH2):
       # Inicializace LCD displeje
     lcd = i2clcd.i2clcd(i2c_bus=1, i2c_addr=0x27, lcd_width=16)
     lcd.init()
     lcd.set_backlight(True)
 
     # Sestavení řetězců 
-    line1 = Dej_cas() + ' ' + str(AirTemperature) + ' ' + str(AirHumidity)
-    line2 = str(SoilHumidity1) + str(SoilHumidity2)
-    
+    line1 = Dej_cas() + ' ' + str(AT) + ' ' + str(AH)
+    line2 = str(SH1) + '% ' + str(SH2) + '%'
+
     # Doplnění řetězce na požadovanou délku
     if len(line1) < 16:
         line1 = line1.ljust(16, ' ')
@@ -278,11 +273,10 @@ def Button4_Pressed():
         FAN_OFF()
 
 def CheckConditions():
+    AirTemperature, AirHumidity = CheckAirStatus()
+    SoilHumidity1, SoilHumidity2 = CheckSoilSatus()
+    PrintStatus(AirTemperature, AirHumidity, SoilHumidity1, SoilHumidity2)
     
-    CheckAirStatus()
-    CheckSoilSatus()
-
-    PrintStatus()
 
 
 
@@ -293,7 +287,7 @@ try:
     JoinToLora() # Zalogujeme se do sítě
     CheckConditions() # Ověříme podmínky ve skleníku
     
-    schedule.evry(1).minutes.do(CheckConditions)
+    schedule.every(1).minutes.do(CheckConditions)
     
 
     while True:
