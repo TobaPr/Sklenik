@@ -144,8 +144,12 @@ def CheckSoilSatus():
     adc = Adafruit_ADS1x15.ADS1115()
     Sensor1 = adc.read_adc(0, gain=1)  
     SH1 = '{:.1f}'.format(100 - (Sensor1 / 32767 * 100))
-    Sensor2 = adc.read_adc(3, gain=2) 
-    SH2 = '{:.1f}'.format(100 - (Sensor2 / 32767 * 100))
+    Sensor2 = adc.read_adc(1, gain=1) 
+    Sensor3 = adc.read_adc(2, gain=1)
+    Sensor4 = adc.read_adc(3, gain=1)
+
+    print("AD hodnoty: " + Sensor1 + ' ' + Sensor2 + ' ' + Sensor3 + ' ' + Sensor4)
+    SH2 = '{:.1f}'.format(100 - (Sensor4 / 32767 * 100))
     print("vlhkost1: " + SH1)
     print("vlhkost2: " + SH2)
     return SH1, SH2
