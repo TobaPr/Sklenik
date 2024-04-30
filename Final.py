@@ -304,9 +304,9 @@ def CheckConditions(print, send, control=False):
     #Reagujeme na podmínky ve skleníku
     if control:    
         hours, minutes = map(int, RTC.split(':'))  
-        Temperature = int(AirTemperature)
-        SoilHumid1 = int(SoilHumidity1)
-        SoilHumid2 = int(SoilHumidity2)
+        Temperature = float(AirTemperature)
+        SoilHumid1 = float(SoilHumidity1)
+        SoilHumid2 = float(SoilHumidity2)
     
 
         SetDoor(Temperature)
