@@ -106,15 +106,15 @@ def CheckSoilSatus():
     SH2 = '{:.1f}'.format(100 - (channel3.value / 32767 * 100))
     return SH1, SH2
 
-def PrintStatus(AT, AH, SH1, SH2):
+def PrintStatus(AT, AH, SH1, SH2, RTC):
       # Inicializace LCD displeje
     lcd = i2clcd.i2clcd(i2c_bus=1, i2c_addr=0x27, lcd_width=16)
     lcd.init()
     lcd.set_backlight(True)
 
     # Sestavení řetězců 
-    line1 = GetRTCTime() + ' ' + str(AT) + 'C ' + str(AH) +'%'
-    line2 = str(SH1) + '% ' + str(SH2) + '%'
+    line1 = RTC + '  ' + str(AT) + ' ' + str(AH) 
+    line2 = str(SH1) + ' ' + str(SH2) 
 
     # Doplnění řetězce na požadovanou délku
     if len(line1) < 16:
@@ -149,10 +149,11 @@ def PrintMesagge(line1, line2):
 
 def OpenDoor(type):
     # Pro ovevírání a zavírání používáme dvě relé
-    GPIO.output(door_close_pin, GPIO.HIGH)
-    time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
-    GPIO.output(door_open_pin, GPIO.LOW)
-    PrintMesagge('Oteviram dvere','')
+    if not GPIO.input(door_close_pin):
+        GPIO.output(door_close_pin, GPIO.HIGH)
+        time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
+        GPIO.output(door_open_pin, GPIO.LOW)
+        PrintMesagge('Oteviram dvere','')
 
     #Type slouží jako příznak zda jde o manuální otevření nebo automatické
     SendLoraMesagge(type + 'O', 101) 
@@ -161,61 +162,68 @@ def OpenDoor(type):
 
 def CloseDoor(type):
     # pro ovevírání a zavírání používáme dvě relé
-    GPIO.output(door_open_pin, GPIO.HIGH)
-    time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
-    GPIO.output(door_close_pin, GPIO.LOW)
-    PrintMesagge('Zaviram dvere','')
-    SendLoraMesagge(type + 'C', 101) # MC (manual close)
-    time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
-    CheckConditions(print=True, send=False)
+    if not GPIO.input(door_open_pin):
+        GPIO.output(door_open_pin, GPIO.HIGH)
+        time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
+        GPIO.output(door_close_pin, GPIO.LOW)
+        PrintMesagge('Zaviram dvere','')
+        SendLoraMesagge(type + 'C', 101) # MC (manual close)
+        time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
+        CheckConditions(print=True, send=False)
 
 def OpenWindow(type):
     # pro ovevírání a zavírání používáme dvě relé
-    GPIO.output(win_close_pin, GPIO.HIGH)
-    time.sleep(1) 
-    GPIO.output(win_open_pin, GPIO.LOW)
-    PrintMesagge('Oteviram okno','')
-    SendLoraMesagge(type + 'O', 102) 
-    time.sleep(WinMovingTime)  
-    CheckConditions(print=True, send=False)
+    if not GPIO.input(win_close_pin):
+        GPIO.output(win_close_pin, GPIO.HIGH)
+        time.sleep(1) 
+        GPIO.output(win_open_pin, GPIO.LOW)
+        PrintMesagge('Oteviram okno','')
+        SendLoraMesagge(type + 'O', 102) 
+        time.sleep(WinMovingTime)  
+        CheckConditions(print=True, send=False)
 
 def CloseWindow(type):
     # pro ovevírání a zavírání používáme dvě relé
-    GPIO.output(win_open_pin, GPIO.HIGH)
-    time.sleep(1) 
-    GPIO.output(win_close_pin, GPIO.LOW)
-    PrintMesagge('Zaviram okno','')
-    SendLoraMesagge(type +'C', 102) 
-    time.sleep(WinMovingTime)  
-    CheckConditions(print=True, send=False)
+    if not GPIO.input(win_open_pin):
+        GPIO.output(win_open_pin, GPIO.HIGH)
+        time.sleep(1) 
+        GPIO.output(win_close_pin, GPIO.LOW)
+        PrintMesagge('Zaviram okno','')
+        SendLoraMesagge(type +'C', 102) 
+        time.sleep(WinMovingTime)  
+        CheckConditions(print=True, send=False)
 
 def OpenValve(type):
-    GPIO.output(ventil_pin, GPIO.LOW)
-    PrintMesagge('Oteviram ventil','')
-    SendLoraMesagge(type + 'O', 103) 
-    time.sleep(VentilMovingTime)
-    CheckConditions(print=True, send=False)
+    if GPIO.input(ventil_pin):
+        GPIO.output(ventil_pin, GPIO.LOW)
+        PrintMesagge('Oteviram ventil','')
+        SendLoraMesagge(type + 'O', 103) 
+        time.sleep(VentilMovingTime)
+        CheckConditions(print=True, send=False)
 
 def CloseValve(type):
-    GPIO.output(ventil_pin, GPIO.HIGH)
-    PrintMesagge('Zaviram ventil')
-    SendLoraMesagge(type + 'C', 103)
-    time.sleep(VentilMovingTime) 
-    CheckConditions(print=True, send=False)   
+    if not GPIO.input(ventil_pin):
+        GPIO.output(ventil_pin, GPIO.HIGH)
+        PrintMesagge('Zaviram ventil','')
+        SendLoraMesagge(type + 'C', 103)
+        time.sleep(VentilMovingTime) 
+        CheckConditions(print=True, send=False)   
 
 def FanOn(type):
-    GPIO.output(fan_pin, GPIO.LOW)
-    PrintMesagge('Zapinam vetrani')
-    SendLoraMesagge(type + 'O', 104)
-    time.sleep(FanDelay)
-    CheckConditions(print=True, send=False)   
+    if GPIO.input(fan_pin):
+        GPIO.output(fan_pin, GPIO.LOW)
+        PrintMesagge('Zapinam vetrani', '')
+        SendLoraMesagge(type + 'O', 104)
+        time.sleep(FanDelay)
+        CheckConditions(print=True, send=False)   
 
 def FanOff(type):
-    GPIO.output(fan_pin, GPIO.HIGH)
-    PrintMesagge('Vypinam vetrani', '') 
-    SendLoraMesagge(str(type) + 'C', 104)
-    time.sleep(FanDelay)
-    CheckConditions(print=True, send=False)   
+    if not GPIO.input(fan_pin):
+        GPIO.output(fan_pin, GPIO.HIGH)
+        PrintMesagge('Vypinam vetrani', '') 
+        SendLoraMesagge(str(type) + 'C', 104)
+        time.sleep(FanDelay)
+        CheckConditions(print=True, send=False)   
 
 
 # Obslužné metody pro tlačítka.
@@ -238,31 +246,76 @@ def Button3_Pressed():
         CloseValve('M')
 
 def Button4_Pressed():
-    if GPIO.input(fan_pin): # pokud je ventil zavreny 
+    if GPIO.input(fan_pin): 
         FanOn('M')
     else:
         FanOff('M')
 
-def CheckConditions(print, send):
+def SetDoor(Temperature):
+    if Temperature > 30:
+        OpenDoor('A')
+
+    if Temperature < 25:
+        CloseDoor('A')
+
+def SetWindow(Temperature):
+    if Temperature > 25:
+        OpenDoor('A')
+
+    if Temperature < 22:
+        CloseDoor('A')
+
+def SetValve(SH1, SH2, Hour):
+    if Hour > 22 and Hour < 8:
+        #Ideální čas na zavlažování
+        if ((SH1 > 0 and SH1 < 20) or (SH2 > 0 and SH2 < 20)):
+            OpenValve('A')
+        else:
+            CloseValve('A')
+    else:
+        CloseValve('A')
+
+def SetFan(Temperature):
+    if Temperature>25:
+        FanOn('A')
+    
+    if Temperature < 22:
+        FanOff('A')
+
+
+
+
+
+def CheckConditions(print, send, control=False):
     AirTemperature, AirHumidity = CheckAirStatus()
     SoilHumidity1, SoilHumidity2 = CheckSoilSatus()
+    RTC = GetRTCTime()
+
 
     #příznak zda vytiskneme na LCD display
     if print:
-        PrintStatus(AirTemperature, AirHumidity, SoilHumidity1, SoilHumidity2)       
+        PrintStatus(AirTemperature, AirHumidity, SoilHumidity1, SoilHumidity2, RTC )       
 
     #příznak zda posíláme zprávu
     if send: 
         Conditions = str(AirTemperature) + ';' + str(AirHumidity) + ';' + str(SoilHumidity1) + ';' + str(SoilHumidity2)
         SendLoraMesagge(Conditions,1)
 
+    #Reagujeme na podmínky ve skleníku
+    if control:    
+        hours, minutes = map(int, RTC.split(':'))  
+        SetDoor(AirTemperature)
+        SetWindow(AirTemperature)
+        SetValve(SoilHumidity1, SoilHumidity2, hours)
+        SetFan(AirTemperature)
+    
 
 # ---------    Hlavní tělo programu    ---------    
 try:
     JoinToLora() # Zalogujeme se do sítě
-    CheckConditions(print = True, send= True) # Ověříme podmínky ve skleníku
-    schedule.every(1).minutes.do(CheckConditions, True,False)
-    schedule.every(15).minutes.do(CheckConditions, True,True)
+    CheckConditions(print = True, send= True, control=True) # Ověříme podmínky ve skleníku
+    schedule.every(1).minutes.do(CheckConditions, True,False,False)
+    schedule.every(20).minutes.do(CheckConditions, True,True,True)
     
 
     while True:
