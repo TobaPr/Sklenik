@@ -188,8 +188,8 @@ def Otevri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_open_pin, GPIO.LOW)
     print("Otevírám dveře")
-    SendMesagge('MO', 101) #(manual open)
     PrintMesagge('Oteviram dvere..','')
+    SendMesagge('MO', 101) #(manual open)
     time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
     CheckConditions(print=True, send=False)
 
@@ -199,8 +199,8 @@ def Zavri_dvere():
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
     GPIO.output(door_close_pin, GPIO.LOW)
     print("Zavirám dveře")
-    SendMesagge('MC', 101) # MC (manual close)
     PrintMesagge('Zaviram dvere...','')
+    SendMesagge('MC', 101) # MC (manual close)
     time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
     # znovu zajistíme kontrolu podmínek ve skleníku
     CheckConditions(print=True, send=True)
