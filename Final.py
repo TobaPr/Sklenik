@@ -18,7 +18,6 @@ WinMovingTime = 40 # doba po kterou se pohybuje motor u okna
 VentilMovingTime = 30 # doba po kterou se pohybuje ventil
 FanDelay = 5
 
-LoraConection = False ## priznak, že jsme připojeni k LoRa síti
 
 
 # Nastavení pinů pro ovládání tlačítek
@@ -63,23 +62,19 @@ def JoinToLora():
         print("Poslal jsem zprávu")
         lora.close()
         print("Pripojeno")
-        LoraConection = True
     except Exception as e:
-        LoraConection = False
         print("Došlo k chybě:", e)
 
 def SendLoraMesagge(text,port):
     try:
-        # pokud nejsme joinutí, zkusíme se připojit
-        if LoraConection == False:
-            JoinToLora()
-
         print("Posilam zpravu: " + str(text) + ' '+ str(port))
         lora = Rak811()
         lora.send(text,int(port))
         lora.close()
     except Exception as e:
         print("Došlo k chybě:", e)
+        JoinToLora()   ## možná nejsme joinutí do sítě (zkusíme se znovu připojit)
+        
 
 
 def GetRTCTime():
@@ -284,13 +279,13 @@ def SetWindow(Temperature):
     if Temperature > 25:
         OpenWindow('A')
 
-    if Temperature < 22:
+    if Temperature < 20:
         CloseWindow('A')
 
 def SetValve(SH1, SH2, Hour):
     if Hour > 22 and Hour < 8:
         #Ideální čas na zavlažování
-        if ((SH1 > 0 and SH1 < 30) or (SH2 > 0 and SH2 < 30)):
+        if ((SH1 > 0 and SH1 < 40) or (SH2 > 0 and SH2 < 40)):
             OpenValve('A')
         else:
             CloseValve('A')
@@ -298,10 +293,10 @@ def SetValve(SH1, SH2, Hour):
         CloseValve('A')
 
 def SetFan(Temperature):
-    if Temperature>25:
+    if Temperature>28:
         FanOn('A')
     
-    if Temperature < 22:
+    if Temperature < 23:
         FanOff('A')
 
 
