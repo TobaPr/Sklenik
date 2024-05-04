@@ -13,10 +13,12 @@ from rak811.rak811_v3 import Rak811
 
 
 # Konstanty
-DoorMovingTime = 45 # doba po kterou se pohybuje motor u dveří
-WinMovingTime = 30 # doba po kterou se pohybuje motor u okna
+DoorMovingTime = 60 # doba po kterou se pohybuje motor u dveří
+WinMovingTime = 40 # doba po kterou se pohybuje motor u okna
 VentilMovingTime = 30 # doba po kterou se pohybuje ventil
-FanDelay = 1
+FanDelay = 5
+
+LoraConection = False ## priznak, že jsme připojeni k LoRa síti
 
 
 # Nastavení pinů pro ovládání tlačítek
@@ -47,25 +49,37 @@ GPIO.setup(ventil_pin, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(fan_pin, GPIO.OUT, initial=GPIO.HIGH)
 
 def JoinToLora():
-    lora = Rak811()
-    lora.set_config('lora:work_mode:0')
-    lora.set_config('lora:join_mode:0')
-    lora.set_config('lora:region:EU868')
-    lora.set_config('lora:app_eui:AC1F09FFF8680811')
-    lora.set_config('lora:app_key:AC1F09FFFE03DD04AC1F09FFF8680811')
-    lora.join()
-    lora.set_config('lora:dr:5')
-    print("připojuji se")
-    lora.send('Start',100)
-    print("Poslal jsem zprávu")
-    lora.close()
-    print("Pripojeno")
+    try:
+        lora = Rak811()
+        lora.set_config('lora:work_mode:0')
+        lora.set_config('lora:join_mode:0')
+        lora.set_config('lora:region:EU868')
+        lora.set_config('lora:app_eui:AC1F09FFF8680811')
+        lora.set_config('lora:app_key:AC1F09FFFE03DD04AC1F09FFF8680811')
+        lora.join()
+        lora.set_config('lora:dr:5')
+        print("připojuji se")
+        lora.send('Start',100)
+        print("Poslal jsem zprávu")
+        lora.close()
+        print("Pripojeno")
+        LoraConection = True
+    except Exception as e:
+        LoraConection = False
+        print("Došlo k chybě:", e)
 
 def SendLoraMesagge(text,port):
-    print("Posilam zpravu: " + str(text) + ' '+ str(port))
-    lora = Rak811()
-    lora.send(text,int(port))
-    lora.close()
+    try:
+        # pokud nejsme joinutí, zkusíme se připojit
+        if LoraConection == False:
+            JoinToLora()
+
+        print("Posilam zpravu: " + str(text) + ' '+ str(port))
+        lora = Rak811()
+        lora.send(text,int(port))
+        lora.close()
+    except Exception as e:
+        print("Došlo k chybě:", e)
 
 
 def GetRTCTime():
@@ -81,30 +95,39 @@ def GetRTCTime():
     return formatted_time
     
 def CheckAirStatus():
-    sensor = Adafruit_DHT.DHT22
-    pin = 21  # GPIO pin 21 
-    # Čtení dat ze senzoru
-    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
-    if temperature is not None and humidity is not None:
-        AT = '{:.1f}'.format(temperature)
-        AH = '{:.1f}'.format(humidity)
-    else:
-        AT = '{:.1f}'.format(0)
-        AH = '{:.1f}'.format(0)
-    return AT, AH
+    try:
+        sensor = Adafruit_DHT.DHT22
+        pin = 21  # GPIO pin 21 
+        # Čtení dat ze senzoru
+        humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+        if temperature is not None and humidity is not None:
+            AT = '{:.1f}'.format(temperature)
+            AH = '{:.1f}'.format(humidity)
+        else:
+            AT = '{:.1f}'.format(0)
+            AH = '{:.1f}'.format(0)
+        return AT, AH
+    except Exception as e:
+        print("Došlo k chybě:", e)
+        return 0.0, 0.0
 
 def CheckSoilSatus():
-    i2c = board.I2C()  
-    ads = ADS.ADS1115(i2c)
-    # Define the analog input channels
-    channel0 = AnalogIn(ads, ADS.P0)
-    #channel1 = AnalogIn(ads, ADS.P1)
-    #channel2 = AnalogIn(ads, ADS.P2)
-    channel3 = AnalogIn(ads, ADS.P3)
+    try:
+        i2c = board.I2C()  
+        ads = ADS.ADS1115(i2c)
+        # Define the analog input channels
+        channel0 = AnalogIn(ads, ADS.P0)
+        #channel1 = AnalogIn(ads, ADS.P1)
+        #channel2 = AnalogIn(ads, ADS.P2)
+        channel3 = AnalogIn(ads, ADS.P3)
 
-    SH1 = '{:.1f}'.format(100 - (channel0.value / 32767 * 100))
-    SH2 = '{:.1f}'.format(100 - (channel3.value / 32767 * 100))
-    return SH1, SH2
+        SH1 = '{:.1f}'.format(100 - (channel0.value / 32767 * 100))
+        SH2 = '{:.1f}'.format(100 - (channel3.value / 32767 * 100))
+        return SH1, SH2
+    except Exception as e: 
+        print("Došlo k chybě:", e)
+        return 0.0, 0.0
+
 
 def PrintStatus(AT, AH, SH1, SH2, RTC):
       # Inicializace LCD displeje
@@ -154,11 +177,10 @@ def OpenDoor(type):
         time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
         GPIO.output(door_open_pin, GPIO.LOW)
         PrintMesagge('Oteviram dvere','')
-
-    #Type slouží jako příznak zda jde o manuální otevření nebo automatické
-    SendLoraMesagge(type + 'O', 101) 
-    time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
-    CheckConditions(print=True, send=False)
+        #Type slouží jako příznak zda jde o manuální otevření nebo automatické
+        SendLoraMesagge(type + 'O', 101) 
+        time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
+        CheckConditions(print=True, send=False)
 
 def CloseDoor(type):
     # pro ovevírání a zavírání používáme dvě relé
@@ -268,7 +290,7 @@ def SetWindow(Temperature):
 def SetValve(SH1, SH2, Hour):
     if Hour > 22 and Hour < 8:
         #Ideální čas na zavlažování
-        if ((SH1 > 0 and SH1 < 20) or (SH2 > 0 and SH2 < 20)):
+        if ((SH1 > 0 and SH1 < 30) or (SH2 > 0 and SH2 < 30)):
             OpenValve('A')
         else:
             CloseValve('A')
