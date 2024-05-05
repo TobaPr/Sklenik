@@ -293,10 +293,10 @@ def SetValve(SH1, SH2, Hour):
         CloseValve('A')
 
 def SetFan(Temperature):
-    if Temperature>28:
+    if Temperature>35:
         FanOn('A')
     
-    if Temperature < 23:
+    if Temperature < 30:
         FanOff('A')
 
 
