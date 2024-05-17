@@ -14,8 +14,8 @@ from rak811.rak811_v3 import Rak811
 
 # Konstanty
 DoorMovingTime = 60 # doba po kterou se pohybuje motor u dveří
-WinMovingTime = 40 # doba po kterou se pohybuje motor u okna
-VentilMovingTime = 30 # doba po kterou se pohybuje ventil
+WinMovingTime = 30 # doba po kterou se pohybuje motor u okna
+VentilMovingTime = 10 # doba po kterou se pohybuje ventil
 FanDelay = 5
 
 
@@ -59,11 +59,10 @@ def JoinToLora():
         lora.set_config('lora:dr:5')
         print("připojuji se")
         lora.send('Start',100)
-        print("Poslal jsem zprávu")
         lora.close()
         print("Pripojeno")
     except Exception as e:
-        print("Došlo k chybě:", e)
+        print("Došlo k chybě při připojování k LoRa:", e)
 
 def SendLoraMesagge(text,port):
     try:
@@ -72,11 +71,9 @@ def SendLoraMesagge(text,port):
         lora.send(text,int(port))
         lora.close()
     except Exception as e:
-        print("Došlo k chybě:", e)
-        JoinToLora()   ## možná nejsme joinutí do sítě (zkusíme se znovu připojit)
+        print("Došlo k chybě při odesílání zprávy:", e)
+    
         
-
-
 def GetRTCTime():
     # Inicializace objektu RTC
     i2c = board.I2C()  # Pokud již není inicializováno
@@ -106,18 +103,34 @@ def CheckAirStatus():
         print("Došlo k chybě:", e)
         return 0.0, 0.0
 
+
+def CalculateSoilHumidity(measurement):
+    # Maximální a minimální hodnoty měření
+    max_measurement = 30820
+    min_measurement = 14550
+    max_humidity = 100
+    min_humidity = 0
+    
+    # Výpočet vlhkosti na základě lineární interpolace
+    humidity = ((max_measurement - measurement) / (max_measurement - min_measurement)) * 100
+    
+    # Omezení hodnoty vlhkosti na rozsah 0-100
+    humidity = max(min_humidity, min(max_humidity, humidity))
+    return humidity
+
+
 def CheckSoilSatus():
     try:
         i2c = board.I2C()  
         ads = ADS.ADS1115(i2c)
-        # Define the analog input channels
+       
         channel0 = AnalogIn(ads, ADS.P0)
         #channel1 = AnalogIn(ads, ADS.P1)
         #channel2 = AnalogIn(ads, ADS.P2)
         channel3 = AnalogIn(ads, ADS.P3)
 
-        SH1 = '{:.1f}'.format(100 - (channel0.value / 32767 * 100))
-        SH2 = '{:.1f}'.format(100 - (channel3.value / 32767 * 100))
+        SH1 = '{:.1f}'.format(CalculateSoilHumidity(channel0.value))
+        SH2 = '{:.1f}'.format(CalculateSoilHumidity(channel3.value))
         return SH1, SH2
     except Exception as e: 
         print("Došlo k chybě:", e)
@@ -269,10 +282,10 @@ def Button4_Pressed():
         FanOff('M')
 
 def SetDoor(Temperature):
-    if Temperature > 30:
+    if Temperature > 28:
         OpenDoor('A')
 
-    if Temperature < 25:
+    if Temperature < 23:
         CloseDoor('A')
 
 def SetWindow(Temperature):
@@ -282,13 +295,17 @@ def SetWindow(Temperature):
     if Temperature < 20:
         CloseWindow('A')
 
-def SetValve(SH1, SH2, Hour):
-    if Hour > 22 and Hour < 8:
-        #Ideální čas na zavlažování
-        if ((SH1 > 0 and SH1 < 40) or (SH2 > 0 and SH2 < 40)):
+def SetValve(SH1, SH2, Hour, Minutes):
+    #Ideální čas na zavlažování 
+    if Hour > 20 and Hour < 6:
+        if ((SH1 > 0 and SH1 < 30) or (SH2 > 0 and SH2 < 30)):
             OpenValve('A')
         else:
-            CloseValve('A')
+            #Pravidelná závlaha v období 20:00 až 20:20 .Na jeden cyklus (20 minut) pustíme závlahu bez ohledu na vlhkost půdy.
+            if (Hour <= 20 and Minutes <= 20):
+                OpenValve('A')
+            else:
+                CloseValve('A')
     else:
         CloseValve('A')
 
@@ -298,9 +315,6 @@ def SetFan(Temperature):
     
     if Temperature < 30:
         FanOff('A')
-
-
-
 
 
 def CheckConditions(print, send, control=False):
@@ -316,7 +330,8 @@ def CheckConditions(print, send, control=False):
     #příznak zda posíláme zprávu
     if send: 
         Conditions = str(AirTemperature) + ';' + str(AirHumidity) + ';' + str(SoilHumidity1) + ';' + str(SoilHumidity2)
-        SendLoraMesagge(Conditions,1)
+        #posíláme podmínky na portu 1
+        SendLoraMesagge(Conditions,1) 
 
     #Reagujeme na podmínky ve skleníku
     if control:    
@@ -325,19 +340,25 @@ def CheckConditions(print, send, control=False):
         SoilHumid1 = float(SoilHumidity1)
         SoilHumid2 = float(SoilHumidity2)
     
-
         SetDoor(Temperature)
         SetWindow(Temperature)
-        SetValve(SoilHumid1, SoilHumid2, hours)
+        SetValve(SoilHumid1, SoilHumid2, hours, minutes)
         SetFan(Temperature)
     
 
 # ---------    Hlavní tělo programu    ---------    
 try:
-    JoinToLora() # Zalogujeme se do sítě
-    CheckConditions(print = True, send= True, control=True) # Ověříme podmínky ve skleníku
-    schedule.every(1).minutes.do(CheckConditions, True,False,False)
-    schedule.every(20).minutes.do(CheckConditions, True,True,True)
+    # Zalogujeme se do LoRa sítě.
+    JoinToLora() 
+
+    # Ověříme podmínky ve skleníku, pošleme je a reagujeme na ně.
+    CheckConditions(print = True, send= True, control=True) 
+
+    #Každé 3 minuty vytiskneme podmínky na display.
+    schedule.every(3).minutes.do(CheckConditions, print=True, send=False, control=False)
+
+    #Každých 20 minut reagujeme na podmínky ve skleníku a posíláme stav přes LoRa a také tiskneme stav na display.
+    schedule.every(20).minutes.do(CheckConditions, print=True, send=True, control=True)
     
 
     while True:
@@ -362,8 +383,7 @@ try:
             Button4_Pressed() # vetrak
 
         schedule.run_pending()
-        time.sleep(1) ##
-
+        time.sleep(1) 
 
 except KeyboardInterrupt:
     print("\nProgram ukončen uživatelem.")
