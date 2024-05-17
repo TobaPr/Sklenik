@@ -10,7 +10,7 @@ from adafruit_ads1x15.analog_in import AnalogIn
 def calculate_humidity(measurement):
     # Maximální a minimální hodnoty měření
     max_measurement = 30820
-    min_measurement = 15550
+    min_measurement = 14550
     max_humidity = 100
     min_humidity = 0
     
