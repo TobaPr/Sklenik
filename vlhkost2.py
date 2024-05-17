@@ -11,8 +11,8 @@ def calculate_humidity(measurement):
     # Maximální a minimální hodnoty měření
     max_measurement = 30820
     min_measurement = 15550
-    max_humidity = 0
-    min_humidity = 100
+    max_humidity = 100
+    min_humidity = 0
     
     # Výpočet vlhkosti na základě lineární interpolace
     humidity = ((max_measurement - measurement) / (max_measurement - min_measurement)) * 100
