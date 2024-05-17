@@ -1,11 +1,15 @@
 import board
+import busio
 import time
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 
 
+# Inicializace I2C sběrnice
+
+
 try:
-    i2c = board.I2C()  
+    i2c = busio.I2C(board.SCL, board.SDA)
     ads = ADS.ADS1115(i2c)
     # Define the analog input channels
     #channel0 = AnalogIn(ads, ADS.P0)
