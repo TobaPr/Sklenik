@@ -106,8 +106,8 @@ def CheckAirStatus():
 
 def CalculateSoilHumidity(measurement):
     # Maximální a minimální hodnoty měření
-    max_measurement = 30820
-    min_measurement = 14550
+    max_measurement = 24400
+    min_measurement = 11820
     max_humidity = 100
     min_humidity = 0
     
