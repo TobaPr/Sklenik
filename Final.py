@@ -107,7 +107,7 @@ def CheckAirStatus():
 def CalculateSoilHumidity(measurement):
     # Maximální a minimální hodnoty měření
     max_measurement = 24400
-    min_measurement = 11820
+    min_measurement = 9820
     max_humidity = 100
     min_humidity = 0
     
@@ -290,10 +290,10 @@ def Button4_Pressed():
         FanOff('M')
 
 def SetDoor(Temperature):
-    if Temperature > 28:
+    if Temperature > 30:
         OpenDoor('A')
 
-    if Temperature < 23:
+    if Temperature < 25:
         CloseDoor('A')
 
 def SetWindow(Temperature):
@@ -311,17 +311,17 @@ def SetValve(SH1, SH2, Hour, Minutes):
         else:
             #Pravidelná závlaha v období 20:00 až 20:20 .Na jeden cyklus (20 minut) pustíme závlahu bez ohledu na vlhkost půdy.
             if (Hour <= 20 and Minutes <= 20):
-                OpenValve('A')
+                OpenValve('S')
             else:
                 CloseValve('A')
     else:
         CloseValve('A')
 
 def SetFan(Temperature):
-    if Temperature>35:
+    if Temperature > 35:
         FanOn('A')
     
-    if Temperature < 30:
+    if Temperature < 33:
         FanOff('A')
 
 
