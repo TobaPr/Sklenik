@@ -106,8 +106,8 @@ def CheckAirStatus():
 
 def CalculateSoilHumidity(measurement):
     # Maximální a minimální hodnoty měření
-    max_measurement = 24400
-    min_measurement = 9820
+    max_measurement = 20400
+    min_measurement = 7820
     max_humidity = 100
     min_humidity = 0
     
@@ -306,7 +306,7 @@ def SetWindow(Temperature):
 def SetValve(SH1, SH2, Hour, Minutes):
     #Ideální čas na zavlažování je od 8 večer do 6 ráno
     if not (Hour > 6 and Hour < 20):
-        if ((SH1 > 0 and SH1 < 30) or (SH2 > 0 and SH2 < 30)):
+        if ((SH1 > 0 and SH1 < 40) or (SH2 > 0 and SH2 < 40)):
             OpenValve('A')
         else:
             #Pravidelná závlaha v období 20:00 až 20:20 .Na jeden cyklus (20 minut) pustíme závlahu bez ohledu na vlhkost půdy.
