@@ -106,7 +106,7 @@ def CheckAirStatus():
 
 def CalculateSoilHumidity(measurement):
     # Maximální a minimální hodnoty měření
-    max_measurement = 20400
+    max_measurement = 14400
     min_measurement = 7820
     max_humidity = 100
     min_humidity = 0
@@ -321,7 +321,7 @@ def SetFan(Temperature):
     if Temperature > 37:
         FanOn('A')
     
-    if Temperature < 32:
+    if Temperature < 35:
         FanOff('A')
 
 
