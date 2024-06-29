@@ -290,22 +290,22 @@ def Button4_Pressed():
         FanOff('M')
 
 def SetDoor(Temperature):
-    if Temperature > 30:
+    if Temperature > 32:
         OpenDoor('A')
 
-    if Temperature < 25:
+    if Temperature < 27:
         CloseDoor('A')
 
 def SetWindow(Temperature):
-    if Temperature > 25:
+    if Temperature > 28:
         OpenWindow('A')
 
-    if Temperature < 20:
+    if Temperature < 25:
         CloseWindow('A')
 
 def SetValve(SH1, SH2, Hour, Minutes):
-    #Ideální čas na zavlažování je od 8 večer do 6 ráno
-    if not (Hour > 6 and Hour < 20):
+    #Ideální čas na zavlažování je večer a ráno (zaléváme jen v 8 večer a 6 ráno)
+    if not (Hour == 6 or Hour == 20):
         if ((SH1 > 0 and SH1 < 40) or (SH2 > 0 and SH2 < 40)):
             OpenValve('A')
         else:
