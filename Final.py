@@ -305,7 +305,7 @@ def SetWindow(Temperature):
 
 def SetValve(SH1, SH2, Hour, Minutes):
     #Ideální čas na zavlažování je večer a ráno (zaléváme jen v 8 večer a 6 ráno)
-    if not (Hour == 6 or Hour == 20):
+    if (Hour == 6 or Hour == 20):
         if ((SH1 > 0 and SH1 < 40) or (SH2 > 0 and SH2 < 40)):
             OpenValve('A')
         else:
