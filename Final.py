@@ -309,11 +309,13 @@ def SetValve(SH1, SH2, Hour, Minutes):
         if ((SH1 > 0 and SH1 < 40) or (SH2 > 0 and SH2 < 40)):
             OpenValve('A')
         else:
+            CloseValve('A')
             #Pravidelná závlaha v období 20:00 až 20:20 .Na jeden cyklus (20 minut) pustíme závlahu bez ohledu na vlhkost půdy.
-            if (Hour == 20 and Minutes <= 20):
-                OpenValve('S')
-            else:
-                CloseValve('A')
+            #Zatím nebudeme používat
+            #if (Hour == 20 and Minutes <= 20):
+            #    OpenValve('S')
+            #else:
+            #    CloseValve('A')
     else:
         CloseValve('A')
 
