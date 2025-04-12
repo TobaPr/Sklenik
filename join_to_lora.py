@@ -2,7 +2,7 @@
 # V3.0.x firmware
 from rak811.rak811_v3 import Rak811
 
-lora = Rak811()
+lora = Rak811(port='/dev/serial0', baudrate=115200)
 lora.set_config('lora:work_mode:0')
 lora.set_config('lora:join_mode:0')
 lora.set_config('lora:region:EU868')

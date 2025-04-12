@@ -312,7 +312,7 @@ def SetValve(SH1, SH2, Hour, Minutes):
             CloseValve('A')
             #Pravidelná závlaha v období 20:00 až 20:20 .Na jeden cyklus (20 minut) pustíme závlahu bez ohledu na vlhkost půdy.
             #Zatím nebudeme používat
-            #if (Hour == 20 and Minutes <= 20):
+            #if (Hour == 20 and Minu                 tes <= 20):
             #    OpenValve('S')
             #else:
             #    CloseValve('A')
