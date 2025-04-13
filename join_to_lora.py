@@ -3,7 +3,8 @@
 from rak811.rak811_v3 import Rak811
 
 # test xxx
-lora = Rak811(port='/dev/serial0', baudrate=115200)
+lora = Rak811()
+lora.hard_rest()
 lora.set_config('lora:work_mode:0')
 lora.set_config('lora:join_mode:0')
 lora.set_config('lora:region:EU868')
