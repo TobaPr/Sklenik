@@ -1,0 +1,7 @@
+from rak811.rak811_v3 import Rak811
+
+lora = Rak811()
+lora.hard_reset()
+resp = lora.get_version()
+print(resp)
+lora.close()
