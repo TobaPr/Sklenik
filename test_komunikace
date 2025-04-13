@@ -1,17 +1,19 @@
 from rak811.rak811_v3 import Rak811
-from rak811.serial import Rak811Serial
 import time
 
-# Vytvoř sériový port na správném zařízení
-serial = Rak811Serial('/dev/ttyAMA0')
+lora = Rak811()  # vytvoří objekt se standardním sériovým portem (nejspíš /dev/ttyS0)
 
-# Předání do hlavního objektu
-lora = Rak811(serial)
+# Teď změníme zařízení ručně
+lora._serial.device = "/dev/ttyAMA0"
+lora._serial.ser.port = "/dev/ttyAMA0"
+lora._serial.ser.close()  # jistota
+lora._serial.ser.open()   # znovu otevřít správný port
 
 # Reset a komunikace
 lora.hard_reset()
 time.sleep(2)
 
+# První jednoduchý test
 lora.set_config('lora:work_mode:0')
 print("Komunikace OK!")
 
