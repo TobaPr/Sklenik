@@ -3,11 +3,18 @@ import time
 
 lora = Rak811()
 
-# Správný způsob, jak změnit port:
-lora._serial.device = "/dev/ttyAMA0"
-lora._serial.close()     # jistota, že je zavřeno
-lora._serial.open()      # znovu otevře nový port
+# Zavři port, pokud je otevřený
+if lora._serial.serial_instance.is_open:
+    lora._serial.serial_instance.close()
 
+# Změň zařízení
+lora._serial.device = "/dev/ttyAMA0"
+lora._serial.serial_instance.port = "/dev/ttyAMA0"
+
+# Otevři port
+lora._serial.serial_instance.open()
+
+# Reset a komunikace
 lora.hard_reset()
 time.sleep(2)
 
@@ -15,3 +22,4 @@ lora.set_config('lora:work_mode:0')
 print("Komunikace OK!")
 
 lora.close()
+
