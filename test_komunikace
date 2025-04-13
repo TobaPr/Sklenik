@@ -1,25 +1,23 @@
-from rak811.rak811_v3 import Rak811
+import serial
 import time
 
-lora = Rak811()
+# Otevření portu
+ser = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=2)
 
-# Zavři port, pokud je otevřený
-if lora._serial.serial_instance.is_open:
-    lora._serial.serial_instance.close()
+# Vyčištění bufferu
+ser.reset_input_buffer()
+ser.reset_output_buffer()
 
-# Změň zařízení
-lora._serial.device = "/dev/ttyAMA0"
-lora._serial.serial_instance.port = "/dev/ttyAMA0"
+# Poslání příkazu
+ser.write(b"at+version\r\n")
 
-# Otevři port
-lora._serial.serial_instance.open()
+# Počkáme na odpověď
+time.sleep(0.5)
+response = ser.read_all()
 
-# Reset a komunikace
-lora.hard_reset()
-time.sleep(2)
+# Výpis
+print("Odpověď ze zařízení:")
+print(response.decode(errors="ignore"))
 
-lora.set_config('lora:work_mode:0')
-print("Komunikace OK!")
-
-lora.close()
+ser.close()
 
