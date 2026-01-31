@@ -21,6 +21,9 @@ FanDelay = 5
 # Příznak zda odesíláme data
 onlinemode = False
 
+# Příznak zda řídíme okno dle času 
+win_by_time = True
+
 
 # Nastavení pinů pro ovládání tlačítek
 button1_pin = 23
@@ -300,12 +303,18 @@ def SetDoor(Temperature):
     if Temperature < 27:
         CloseDoor('A')
 
-def SetWindow(Temperature):
-    if Temperature > 28:
-        OpenWindow('A')
+def SetWindow(Temperature, Hour):
+    if win_by_time != True:
+        if Temperature > 28:
+            OpenWindow('A')
 
-    if Temperature < 25:
-        CloseWindow('A')
+        if Temperature < 25:
+            CloseWindow('A')
+    else:
+        if (Hour >= 7 and Hour <= 18):
+            OpenWindow('A')
+        else:
+            CloseWindow('A')
 
 def SetValve(SH1, SH2, Hour, Minutes):
     #Ideální čas na zavlažování je večer a ráno (zaléváme jen v 8 večer a 6 ráno)
@@ -344,7 +353,7 @@ def CheckConditions(print, send, control=False):
     
         SetValve(SoilHumid1, SoilHumid2, hours, minutes)
         SetDoor(Temperature)
-        SetWindow(Temperature)
+        SetWindow(Temperature, hours)
         SetFan(Temperature)
 
     #Příznak zda posíláme zprávu
