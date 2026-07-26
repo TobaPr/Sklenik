@@ -13,8 +13,8 @@ from rak811.rak811_v3 import Rak811
 
 
 # Konstanty
-DoorMovingTime = 30 # doba po kterou se pohybuje motor u dveří
-WinMovingTime = 30 # doba po kterou se pohybuje motor u okna
+DoorMovingTime = 90 # doba po kterou se pohybuje motor u dveří
+WinMovingTime = 60 # doba po kterou se pohybuje motor u okna
 VentilMovingTime = 10 # doba po kterou se pohybuje ventil
 FanDelay = 5
 
@@ -46,9 +46,9 @@ GPIO.setup(button2_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(button3_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
 GPIO.setup(button4_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
 GPIO.setup(door_open_pin, GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(door_close_pin, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(door_close_pin, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(win_open_pin, GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(win_close_pin, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(win_close_pin, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(ventil_pin, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(fan_pin, GPIO.OUT, initial=GPIO.HIGH)
 
@@ -193,6 +193,7 @@ def PrintMesagge(line1, line2):
 
 
 def OpenDoor(type):
+    global Door_state
     # Pro ovevírání a zavírání používáme dvě relé
     GPIO.output(door_close_pin, GPIO.HIGH)
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
@@ -207,6 +208,7 @@ def OpenDoor(type):
     CheckConditions(print=True, send=False)
 
 def CloseDoor(type):
+    global Door_state
     # pro ovevírání a zavírání používáme dvě relé
     GPIO.output(door_open_pin, GPIO.HIGH)
     time.sleep(1) # pro jistotu počkáme (je nutné zabránit tomu aby byli sepnuté obě)
@@ -220,6 +222,7 @@ def CloseDoor(type):
     CheckConditions(print=True, send=False)
 
 def OpenWindow(type):
+    global Win_state
     # pro ovevírání a zavírání používáme dvě relé
     GPIO.output(win_close_pin, GPIO.HIGH)
     time.sleep(1) 
@@ -233,6 +236,7 @@ def OpenWindow(type):
     CheckConditions(print=True, send=False)
 
 def CloseWindow(type):
+    global Win_state
     # pro ovevírání a zavírání používáme dvě relé
     GPIO.output(win_open_pin, GPIO.HIGH)
     time.sleep(1) 
@@ -246,6 +250,7 @@ def CloseWindow(type):
     CheckConditions(print=True, send=False)
 
 def OpenValve(type):
+    global Valve_state
     GPIO.output(ventil_pin, GPIO.LOW)
     PrintMesagge('Oteviram ventil','Odesilam...')
     SendLoraMesagge(type + 'O', 103) 
@@ -255,6 +260,7 @@ def OpenValve(type):
     CheckConditions(print=True, send=False)
 
 def CloseValve(type):
+    global Valve_state
     GPIO.output(ventil_pin, GPIO.HIGH)
     PrintMesagge('Zaviram ventil','Odesilam...')
     SendLoraMesagge(type + 'C', 103)
@@ -264,6 +270,7 @@ def CloseValve(type):
     CheckConditions(print=True, send=False)   
 
 def FanOn(type):
+    global Fan_state
     GPIO.output(fan_pin, GPIO.LOW)
     PrintMesagge('Zapinam vetrani', 'Odesilam...')
     SendLoraMesagge(type + 'O', 104)
@@ -273,6 +280,7 @@ def FanOn(type):
     CheckConditions(print=True, send=False)   
 
 def FanOff(type):
+    global Fan_state
     GPIO.output(fan_pin, GPIO.HIGH)
     PrintMesagge('Vypinam vetrani', 'Odesilam...') 
     SendLoraMesagge(str(type) + 'C', 104)
