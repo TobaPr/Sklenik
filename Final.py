@@ -13,7 +13,7 @@ from rak811.rak811_v3 import Rak811
 
 
 # Konstanty
-DoorMovingTime = 60 # doba po kterou se pohybuje motor u dveří
+DoorMovingTime = 30 # doba po kterou se pohybuje motor u dveří
 WinMovingTime = 30 # doba po kterou se pohybuje motor u okna
 VentilMovingTime = 10 # doba po kterou se pohybuje ventil
 FanDelay = 5
@@ -51,6 +51,13 @@ GPIO.setup(win_open_pin, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(win_close_pin, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(ventil_pin, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(fan_pin, GPIO.OUT, initial=GPIO.HIGH)
+
+# Stavy potřebné pro ovledání tlačítek
+Door_state = False
+Win_state = False
+Valve_state = False
+Fan_state = False
+
 
 def JoinToLora():
     if onlinemode:
@@ -196,6 +203,7 @@ def OpenDoor(type):
     PrintMesagge('Oteviram dvere','')
     time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
     GPIO.output(door_open_pin, GPIO.HIGH)
+    Door_state = True
     CheckConditions(print=True, send=False)
 
 def CloseDoor(type):
@@ -208,6 +216,7 @@ def CloseDoor(type):
     PrintMesagge('Zaviram dvere','')
     time.sleep(DoorMovingTime)  # Počkáme než dojede motor... 
     GPIO.output(door_close_pin, GPIO.HIGH)
+    Door_state = False
     CheckConditions(print=True, send=False)
 
 def OpenWindow(type):
@@ -220,6 +229,7 @@ def OpenWindow(type):
     PrintMesagge('Oteviram okno','')
     time.sleep(WinMovingTime) 
     GPIO.output(win_open_pin, GPIO.HIGH) 
+    Win_state = True
     CheckConditions(print=True, send=False)
 
 def CloseWindow(type):
@@ -232,6 +242,7 @@ def CloseWindow(type):
     PrintMesagge('Zaviram okno','')
     time.sleep(WinMovingTime)  
     GPIO.output(win_close_pin, GPIO.HIGH)
+    Win_state = False
     CheckConditions(print=True, send=False)
 
 def OpenValve(type):
@@ -240,6 +251,7 @@ def OpenValve(type):
     SendLoraMesagge(type + 'O', 103) 
     PrintMesagge('Oteviram ventil','')
     time.sleep(VentilMovingTime)
+    Valve_state = True
     CheckConditions(print=True, send=False)
 
 def CloseValve(type):
@@ -248,6 +260,7 @@ def CloseValve(type):
     SendLoraMesagge(type + 'C', 103)
     PrintMesagge('Zaviram ventil','')
     time.sleep(VentilMovingTime) 
+    Valve_state = False
     CheckConditions(print=True, send=False)   
 
 def FanOn(type):
@@ -256,6 +269,7 @@ def FanOn(type):
     SendLoraMesagge(type + 'O', 104)
     PrintMesagge('Zapinam vetrani', '')
     time.sleep(FanDelay)
+    Fan_state = True
     CheckConditions(print=True, send=False)   
 
 def FanOff(type):
@@ -264,30 +278,31 @@ def FanOff(type):
     SendLoraMesagge(str(type) + 'C', 104)
     PrintMesagge('Vypinam vetrani', '') 
     time.sleep(FanDelay)
+    Fan_state = False
     CheckConditions(print=True, send=False)   
 
 
 # Obslužné metody pro tlačítka.
 def Button1_Pressed():
-    if GPIO.input(door_open_pin): # pokud jsou dveře zavřené 
+    if Door_state == False: # pokud jsou dveře zavřené 
         OpenDoor('M')
     else:
         CloseDoor('M')
 # Obslužná metoda pro tlačítko 2. Ručně Otevírá / zavírá okno.
 def Button2_Pressed():
-    if GPIO.input(win_open_pin): # pokud je okno zavřené 
+    if Win_state == False: # pokud je okno zavřené 
         OpenWindow('M')
     else:
         CloseWindow('M')
 
 def Button3_Pressed():
-    if GPIO.input(ventil_pin): # pokud je ventil zavreny 
+    if Valve_state == False: # pokud je ventil zavreny 
         OpenValve('M')
     else:
         CloseValve('M')
 
 def Button4_Pressed():
-    if GPIO.input(fan_pin): 
+    if Fan_state == False:
         FanOn('M')
     else:
         FanOff('M')
