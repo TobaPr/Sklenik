@@ -330,7 +330,7 @@ def SetWindow(Temperature, Hour):
         if Temperature < 25:
             CloseWindow('A')
     else:
-        if (Hour >= 6 and Hour <= 21):
+        if (Hour >= 6 and Hour < 20):
             OpenWindow('A')
         else:
             CloseWindow('A')
@@ -343,7 +343,7 @@ def SetValve(SH1, SH2, Hour, Minutes):
         else:
             CloseValve('A')
             #Pravidelná závlaha
-            if ((Hour == 20 and Minutes <= 30) or (Hour == 6 and Minutes <= 20)):
+            if ((Hour == 20 and Minutes <= 20) or (Hour == 6 and Minutes <= 20)):
                 OpenValve('S')
             else:
                 CloseValve('A')
