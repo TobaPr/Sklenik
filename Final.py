@@ -343,7 +343,7 @@ def SetValve(SH1, SH2, Hour, Minutes):
         else:
             CloseValve('A')
             #Pravidelná závlaha
-            if ((Hour == 20 and Minutes <= 20) or (Hour == 6 and Minutes <= 20)):
+            if (Hour == 20 and Minutes <= 20):
                 OpenValve('S')
             else:
                 CloseValve('A')
